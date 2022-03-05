@@ -1,4 +1,4 @@
-export default async function validateCategory(schema){
+export default async function validateSchema(schema){
     return (req, res, next) => {
         const validation = schema.validate(req.body);
         if(validation.error){
