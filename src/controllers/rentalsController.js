@@ -1,6 +1,7 @@
 import db from '../db.js';
 import dayjs from 'dayjs';
 import moment from 'moment';
+import sqlstring from 'sqlstring';
 
 export async function getRentals(req, res) {
     try {
@@ -25,8 +26,8 @@ export async function getRentals(req, res) {
             FROM rentals 
             JOIN customers ON rentals."customerId"=customers.id 
             JOIN games ON rentals."gameId"=games.id JOIN categories ON games."categoryId"=categories.id
-            ${queryCustomerId}
-            ${queryGameId}
+            ${sqlstring.format(queryCustomerId)}
+            ${sqlstring.format(queryGameId)}
         `);
         if(result.rows.length === 0){
             return res.sendStatus(404);

@@ -2,7 +2,7 @@ import db from '../db.js';
 import sqlstring from 'sqlstring';
 
 export async function getGames(req, res) {
-    const queryName= '';
+    let queryName= '';
     if(req.query.name){
         queryName = sqlstring.format(`WHERE LOWER(games.name) LIKE LOWER('%${req.query.name}%')`);
     }
@@ -11,7 +11,7 @@ export async function getGames(req, res) {
             SELECT games.*, categories.name AS "categoryName" 
             FROM games
             JOIN categories ON games."categoryId"=categories.id
-            ${queryName}
+            ${sqlstring.format(queryName)}
         `)
         res.status(200).send(result.rows);
 

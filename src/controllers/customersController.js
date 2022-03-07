@@ -1,3 +1,4 @@
+import sqlstring from 'sqlstring';
 import db from '../db.js';
 
 export async function getCustomers(req, res) {
@@ -5,7 +6,7 @@ export async function getCustomers(req, res) {
         let queryCpf = '';
         if (req.query.cpf) {
             queryCpf = `WHERE cpf LIKE '%${req.query.cpf}%'`;
-            const result = await db.query(`SELECT * FROM customers ${queryCpf}`);
+            const result = await db.query(`SELECT * FROM customers ${sqlstring.format(queryCpf)}`);
             return res.status(200).send(result.rows);
         }
         
