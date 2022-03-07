@@ -2,14 +2,11 @@ import db from '../db.js';
 
 export async function getCustomers(req, res) {
     try {
-        const queryCpf = '';
+        let queryCpf = '';
         if (req.query.cpf) {
             queryCpf = `WHERE cpf LIKE '%${req.query.cpf}%'`;
-            const result = await db.query(`
-            SELECT * FROM customers
-            ${queryName}
-            `)
-            res.status(200).send(result.rows);
+            const result = await db.query(`SELECT * FROM customers ${queryCpf}`);
+            return res.status(200).send(result.rows);
         }
         
         if (req.params.id){
@@ -17,8 +14,13 @@ export async function getCustomers(req, res) {
             if(result.rows.length === 0){
                 return res.sendStatus(404);
             }
-            res.status(200).send(result.rows);
+            return res.status(200).send(result.rows);
         }
+
+        const result = await db.query(`
+            SELECT * FROM customers
+        `)
+        res.status(200).send(result.rows);
 
     } catch (error) {
         res.status(500).send(error);
@@ -27,12 +29,11 @@ export async function getCustomers(req, res) {
 
 export async function postCustomer(req, res){
     try {
-        const result = await db.query(`SELECT * FROM customers WHERE cpf=$1`, [req.body.cpf]);
+        const {name, phone, cpf, birthday} = req.body;
+        const result = await db.query(`SELECT * FROM customers WHERE cpf=$1`, [cpf]);
         if(result.rows.length !== 0){
             return res.sendStatus(409);
         }
-
-        const {name, phone, cpf, birthday} = req.body;
 
         await db.query(`
             INSERT INTO customers (name, phone, cpf, birthday)
@@ -49,11 +50,11 @@ export async function postCustomer(req, res){
 export async function updateCustomer(req, res) {
     try {
         const {id} = req.params;
-        const result = await db.query(`SELECT * FROM customers WHERE cpf=$1`, [req.body.cpf]);
+        const {name, phone, cpf, birthday} = req.body;
+        const result = await db.query(`SELECT * FROM customers WHERE cpf=$1`, [cpf]);
         if(result.rows.length !== 0){
             return res.sendStatus(409);
         }
-        const {name, phone, cpf, birthday} = req.body;
         await db.query(`
             UPDATE customers 
             SET name=$1, phone=$2, cpf=$3, birthday=$4
