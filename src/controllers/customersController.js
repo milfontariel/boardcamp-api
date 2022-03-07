@@ -14,7 +14,7 @@ export async function getCustomers(req, res) {
             if(result.rows.length === 0){
                 return res.sendStatus(404);
             }
-            return res.status(200).send(result.rows);
+            return res.status(200).send(result.rows[0]);
         }
 
         const result = await db.query(`
